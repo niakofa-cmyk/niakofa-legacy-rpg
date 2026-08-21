@@ -114,6 +114,7 @@ export const mensahCompoundScene: LegacyMapScene = {
     { id: "inner-courtyard", x: 16, y: 13, triggers: { type: "dialogue", nodeId: "courtyard-observe" } },
     { id: "family-shrine", x: 8, y: 10, triggers: { type: "vaultArtifact", artifactId: "family-shrine-memory" } },
     { id: "well", x: 15, y: 12, triggers: { type: "vaultArtifact", artifactId: "family-well-memory" } },
+    { id: "compound-fishing-pond", x: 27, y: 18, triggers: { type: "fishing", spotId: "compound-pond" } },
     { id: "cooking-area", x: 19, y: 12, triggers: { type: "dialogue", nodeId: "cooking-fire-talk" } },
     { id: "palm-wine-shed", x: 26, y: 17, triggers: { type: "dialogue", nodeId: "palm-wine-inspect" } },
     { id: "guest-house", x: 20, y: 16, triggers: { type: "dialogue", nodeId: "guest-house-enter" } },

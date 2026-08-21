@@ -50,6 +50,7 @@ export interface LegacyInteractionPoint {
   /** What this resolves to — a dialogue node, a Family Vault artifact reveal, a quest step, etc. */
   triggers:
     | { type: "dialogue"; nodeId: string }
+    | { type: "fishing"; spotId: string }
     | { type: "vaultArtifact"; artifactId: string }
     | { type: "questStep"; questId: string; stepId: string }
     | { type: "worldEvolutionReveal"; eventId: string };

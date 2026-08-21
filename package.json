@@ -3,5 +3,8 @@
   "version": "0.1.0",
   "private": true,
   "packageManager": "pnpm@11.22.0",
+  "scripts": {
+    "validate:mensah": "node scripts/validate-mensah-compound.mjs"
+  },
   "engines": { "node": ">=22" }
 }

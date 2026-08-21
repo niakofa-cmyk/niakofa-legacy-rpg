@@ -21,7 +21,6 @@ export interface LegacyLaunchContext {
   mode: "mock" | "live";
   familyId?: string;
   characterId?: string;
-  sessionToken?: string;
   gameHour?: number;
 }
 

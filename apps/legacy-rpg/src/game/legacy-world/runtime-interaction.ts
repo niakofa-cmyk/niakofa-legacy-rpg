@@ -38,13 +38,22 @@ function getSceneInteraction(scene: LegacyMapScene, playerPos: Point, padding: n
     id: `scene-activity:${scene.id}:${point.id}`,
     locationId: location.id,
     type: point.triggers.type === "questStep" ? "quest-objective"
+      : point.triggers.type === "fishing" ? "fishing"
       : point.triggers.type === "vaultArtifact" ? "memory-echo"
       : "dialogue",
-    runtime: "inline",
+    runtime: point.triggers.type === "fishing" ? "focused" : "inline",
     canRepeat: true,
     label: location.defaultPrompt,
     onComplete: () => {
       const trigger = point.triggers;
+      if (trigger.type === "fishing") {
+        return [{
+          type: "journal-entry",
+          title: "Compound Fishing",
+          body: `Kwame fished at the ${trigger.spotId.replace(/-/g, " ")}.`,
+          tags: ["mensah-compound", "fishing"],
+        }];
+      }
       if (trigger.type === "vaultArtifact") {
         return [
           { type: "add-memory-echo", locationId: location.id, memoryId: trigger.artifactId },
