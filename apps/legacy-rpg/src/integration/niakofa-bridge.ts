@@ -1,29 +1,53 @@
 import type { LegacyLaunchContext } from "@niakofa/shared-types";
 
+const DEFAULT_MOCK_CONTEXT: LegacyLaunchContext = {
+  mode: "mock",
+  characterId: "kwame-mensah",
+  gameHour: 14,
+};
+
+function getPlatformApiOrigin(): string {
+  const configured = import.meta.env.VITE_NIAKOFA_API_ORIGIN?.trim();
+  if (!configured) return window.location.origin;
+
+  const url = new URL(configured, window.location.origin);
+  if (!["http:", "https:"].includes(url.protocol)) {
+    throw new Error("VITE_NIAKOFA_API_ORIGIN must be an HTTP(S) origin.");
+  }
+  return url.origin;
+}
+
 /**
  * Mock-first launch context. Live launches use a one-time, short-lived ticket
  * issued by the platform. The RPG exchanges the ticket immediately and only
  * receives the narrow launch context; it never receives a raw session token.
+ *
+ * VITE_NIAKOFA_API_ORIGIN is required for a separately hosted production RPG.
+ * Same-origin deployments may omit it and use the current origin.
  */
 export async function getLegacyLaunchContext(): Promise<LegacyLaunchContext> {
-  if (typeof window === "undefined") {
-    return { mode: "mock", characterId: "kwame-mensah", gameHour: 14 };
-  }
+  if (typeof window === "undefined") return DEFAULT_MOCK_CONTEXT;
 
   const params = new URLSearchParams(window.location.search);
   const ticket = params.get("ticket");
-  if (!ticket) return { mode: "mock", characterId: "kwame-mensah", gameHour: 14 };
+  if (!ticket) return DEFAULT_MOCK_CONTEXT;
+
+  const apiOrigin = getPlatformApiOrigin();
 
   // Do not leave a bearer-like launch credential in browser history or copied
   // URLs after the exchange has started.
   window.history.replaceState({}, document.title, window.location.pathname);
 
-  const response = await fetch(`/api/legacy/launch-context?ticket=${encodeURIComponent(ticket)}`, {
-    method: "GET",
-    credentials: "include",
-    cache: "no-store",
-    headers: { Accept: "application/json" },
-  });
+  const response = await fetch(
+    `${apiOrigin}/api/legacy/launch-context?ticket=${encodeURIComponent(ticket)}`,
+    {
+      method: "GET",
+      credentials: "omit",
+      cache: "no-store",
+      headers: { Accept: "application/json" },
+      referrerPolicy: "no-referrer",
+    },
+  );
   if (!response.ok) {
     throw new Error(response.status === 410
       ? "This Legacy launch ticket has expired or was already used."
